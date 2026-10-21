@@ -1,0 +1,6 @@
+{
+  "name": "论文智检",
+  "description": "学术论文规范性智能检测系统，支持错别字、病句、图表规范、表格规范、参考文献等学术规范检测与后台管理。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
