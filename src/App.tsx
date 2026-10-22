@@ -26,10 +26,12 @@ import HelpView from './components/help/HelpView';
 import LegalDocumentView from './components/legal/LegalDocumentView';
 import AdminPlatformView from './components/admin/AdminPlatformView';
 import InstitutionPortalView from './components/admin/views/InstitutionPortalView';
+import InstitutionMemberDashboardView from './components/institution/InstitutionMemberDashboardView';
 import { initialInstitutions, InstitutionItem } from './data/adminMockData';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageKey>('landing');
+  const [loginPortal, setLoginPortal] = useState<'personal' | 'institution'>('personal');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [rechargeModalOpen, setRechargeModalOpen] = useState(false);
   const [selectedRecordForReport, setSelectedRecordForReport] = useState<PaperDetectionRecord | null>(null);
@@ -168,32 +170,41 @@ export default function App() {
       ) : currentPage === 'landing' ? (
         /* 1. If on Landing Page: render full official website */
         <LandingPage 
-          onEnterApp={(target) => setCurrentPage(target || 'dashboard')} 
+          onEnterApp={(target, portal) => {
+            if (portal) setLoginPortal(portal);
+            setCurrentPage(target || 'dashboard');
+          }} 
           onViewSampleReport={(sampleRecord) => setSelectedRecordForReport(sampleRecord)}
         />
       ) : currentPage === 'login' ? (
-        /* 2. Standalone Login Page (1:1 Exact Match with Screenshots) */
+        /* 2. Standalone Login Page (两个不同入口：个人自费 vs 机构师生) */
         <LoginView
           currentUser={user}
-          onLoginSuccess={(newUsername, phone, targetPage, instName, adminRole, collegeName) => {
+          initialPortal={loginPortal}
+          onLoginSuccess={(newUsername, phone, targetPage, instName, adminRole, collegeName, memberDetails) => {
             if (instName) {
               setCurrentInstitutionName(instName);
             }
-            if (adminRole) {
+            if (adminRole === '总管理员' || adminRole === '学院管理员') {
               setCurrentInstitutionAdminRole(adminRole);
             }
             if (collegeName) {
               setCurrentInstitutionCollege(collegeName);
             }
+
+            // 1. Institution Admin Portal
             if (targetPage === 'institutionPortal') {
               const effectiveRole = adminRole === '学院管理员' ? '学院管理员' : '机构管理员';
               setUser((prev) => ({
                 ...prev,
                 username: newUsername,
+                name: newUsername,
                 role: effectiveRole,
                 institution: instName || '武汉大学',
+                college: collegeName || '全校',
                 phone: phone || prev.phone,
                 avatarLetter: newUsername[0] || '管',
+                isInstitutionMember: false,
               }));
               setCurrentInstitutionAdmin(newUsername || (adminRole === '学院管理员' ? '张主任' : '王老师'));
               setCurrentInstitutionAdminRole(adminRole === '学院管理员' ? '学院管理员' : '总管理员');
@@ -204,22 +215,60 @@ export default function App() {
               setCurrentPage('dashboard');
               return;
             }
+
+            // 2. Platform Admin Platform
             if (targetPage === 'adminPlatform') {
               setUser((prev) => ({
                 ...prev,
                 username: newUsername || 'admin',
+                name: newUsername || 'admin',
                 role: '平台管理员',
                 phone: phone || prev.phone,
                 avatarLetter: '管',
+                isInstitutionMember: false,
               }));
               setCurrentPage('adminPlatform');
               return;
             }
+
+            // 3. 机构下的学生/老师账号登录
+            if (adminRole === '机构学生' || adminRole === '机构教师' || memberDetails?.isInstitutionMember) {
+              const isTeacher = adminRole === '机构教师' || memberDetails?.identity === '老师';
+              setUser((prev) => ({
+                ...prev,
+                username: newUsername,
+                name: memberDetails?.name || newUsername,
+                role: isTeacher ? '机构教师' : '机构学生',
+                identity: isTeacher ? '老师' : '学生',
+                institution: instName || '武汉大学',
+                college: collegeName || (isTeacher ? '电子信息学院' : '计算机学院'),
+                studentNo: memberDetails?.studentNo || (isTeacher ? 'T20190802' : '20242021001'),
+                advisorName: memberDetails?.advisorName || (isTeacher ? undefined : '李教授 (计算机学院)'),
+                degreeType: memberDetails?.degreeType || (isTeacher ? '专任教师 / 硕士生导师' : '工学硕士研究生 (2024级)'),
+                institutionTrialPapers: memberDetails?.institutionTrialPapers ?? (isTeacher ? 3 : 2),
+                usedInstitutionTrialPapers: memberDetails?.usedInstitutionTrialPapers ?? (isTeacher ? 0 : 1),
+                allocatedQuota: memberDetails?.allocatedQuota ?? (isTeacher ? 2000 : 1200),
+                usedAllocatedQuota: memberDetails?.usedAllocatedQuota ?? (isTeacher ? 0 : 400),
+                isInstitutionMember: true,
+                phone: phone || prev.phone,
+                avatarLetter: (memberDetails?.name || newUsername)[0] || (isTeacher ? '师' : '生'),
+              }));
+              setCurrentPage('dashboard');
+              return;
+            }
+
+            // 4. 个人/自费学生账号登录
             if (newUsername) {
               setUser((prev) => ({
                 ...prev,
                 username: newUsername,
+                name: newUsername,
                 role: '普通用户',
+                identity: undefined,
+                institution: '',
+                college: '',
+                studentNo: undefined,
+                isInstitutionMember: false,
                 phone: phone || prev.phone,
                 avatarLetter: newUsername[0] || prev.avatarLetter,
               }));
@@ -329,13 +378,23 @@ export default function App() {
                 /* Student / Personal User Views (Same shell, Student Features, without 校方试用) */
                 <>
                   {currentPage === 'dashboard' && (
-                    <DashboardView
-                      user={user}
-                      records={records}
-                      onNavigate={setCurrentPage}
-                      onOpenRecharge={() => setRechargeModalOpen(true)}
-                      onViewRecord={(rec) => setSelectedRecordForReport(rec)}
-                    />
+                    user.isInstitutionMember ? (
+                      <InstitutionMemberDashboardView
+                        user={user}
+                        records={records}
+                        onNavigate={setCurrentPage}
+                        onOpenRecharge={() => setRechargeModalOpen(true)}
+                        onViewRecord={(rec) => setSelectedRecordForReport(rec)}
+                      />
+                    ) : (
+                      <DashboardView
+                        user={user}
+                        records={records}
+                        onNavigate={setCurrentPage}
+                        onOpenRecharge={() => setRechargeModalOpen(true)}
+                        onViewRecord={(rec) => setSelectedRecordForReport(rec)}
+                      />
+                    )
                   )}
 
                   {currentPage === 'detection' && (
@@ -369,6 +428,7 @@ export default function App() {
 
                   {currentPage === 'history' && (
                     <HistoryView
+                      user={user}
                       records={records}
                       batchTasks={batchTasks}
                       initialType={historyDefaultType}

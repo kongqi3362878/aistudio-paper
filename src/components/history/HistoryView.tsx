@@ -10,15 +10,17 @@ import {
   ChevronDown,
   FileCheck,
   ShieldAlert,
-  AlertTriangle
+  AlertTriangle,
+  Award
 } from 'lucide-react';
-import { HistoryTab, HistoryType, PaperDetectionRecord, BatchTask } from '../../types';
+import { HistoryTab, HistoryType, PaperDetectionRecord, BatchTask, UserProfile } from '../../types';
 import { 
   downloadFile, 
   generateRiskReportIndexHtml, 
   generateStandardReportIndexHtml 
 } from '../../utils/reportExportUtils';
 import { Check } from 'lucide-react';
+import ThesisComplianceReceiptModal from '../institution/ThesisComplianceReceiptModal';
 
 interface HistoryViewProps {
   records: PaperDetectionRecord[];
@@ -28,6 +30,7 @@ interface HistoryViewProps {
   onDeleteBatch: (id: string) => void;
   initialTab?: HistoryTab;
   initialType?: HistoryType;
+  user?: UserProfile;
 }
 
 export default function HistoryView({
@@ -38,6 +41,7 @@ export default function HistoryView({
   onDeleteBatch,
   initialTab = 'all',
   initialType = 'paper',
+  user,
 }: HistoryViewProps) {
   const [activeTab, setActiveTab] = useState<HistoryTab>(initialTab);
   const [historyType, setHistoryType] = useState<HistoryType>(initialType);
@@ -45,6 +49,13 @@ export default function HistoryView({
   const [statusFilter, setStatusFilter] = useState<'all' | 'done'>('all');
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [downloadToast, setDownloadToast] = useState<string | null>(null);
+  const [receiptModalOpen, setReceiptModalOpen] = useState(false);
+  const [selectedReceiptRecord, setSelectedReceiptRecord] = useState<PaperDetectionRecord | null>(null);
+
+  const handleOpenReceipt = (rec: PaperDetectionRecord) => {
+    setSelectedReceiptRecord(rec);
+    setReceiptModalOpen(true);
+  };
 
   const handleDownloadItem = (item: PaperDetectionRecord) => {
     if (historyType === 'risk' || item.type === 'risk') {
@@ -326,11 +337,27 @@ export default function HistoryView({
                         <td className="py-5 px-7 whitespace-nowrap">
                           <span className="font-extrabold text-slate-900">{item.issuesCount}</span>
                           <span className="text-slate-400 text-xs sm:text-sm ml-1.5 font-medium">
-                            / 扣除 {item.cost.toLocaleString()} 积分
+                            {user?.isInstitutionMember ? (
+                              <span className="inline-flex items-center text-indigo-700 bg-indigo-50 font-bold px-2 py-0.5 rounded-md border border-indigo-200/60 text-xs">
+                                校方资助 · 试用抵扣
+                              </span>
+                            ) : (
+                              `/ 扣除 ${item.cost.toLocaleString()} 积分`
+                            )}
                           </span>
                         </td>
                         <td className="py-5 px-7 text-right whitespace-nowrap">
                           <div className="flex items-center justify-end gap-2.5" onClick={(e) => e.stopPropagation()}>
+                            {user?.isInstitutionMember && (
+                              <button
+                                type="button"
+                                onClick={() => handleOpenReceipt(item)}
+                                className="p-2 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 rounded-xl transition-all hover:scale-110 cursor-pointer"
+                                title="查验校方学位论文规范回执单"
+                              >
+                                <Award className="w-4.5 h-4.5" />
+                              </button>
+                            )}
                             <button
                               type="button"
                               onClick={() => onViewRecord(item)}
@@ -483,6 +510,16 @@ export default function HistoryView({
             {downloadToast}
           </div>
         </div>
+      )}
+
+      {/* Thesis Compliance Receipt Modal */}
+      {user && (
+        <ThesisComplianceReceiptModal
+          isOpen={receiptModalOpen}
+          onClose={() => setReceiptModalOpen(false)}
+          record={selectedReceiptRecord}
+          user={user}
+        />
       )}
     </div>
   );

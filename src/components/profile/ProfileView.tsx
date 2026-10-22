@@ -51,9 +51,6 @@ export default function ProfileView({
   onNavigate,
   onOpenRecharge,
 }: ProfileViewProps) {
-  // Navigation sub-tab inside Account Center
-  const [activeTab, setActiveTab] = useState<'all' | 'account' | 'assets'>('all');
-
   // Modal display toggles (Account username and Phone are non-editable as required)
   const [isEditingPassword, setIsEditingPassword] = useState(false);
   const [isEditingEmail, setIsEditingEmail] = useState(false);
@@ -74,16 +71,6 @@ export default function ProfileView({
   const [showOldPass, setShowOldPass] = useState(false);
   const [showNewPass, setShowNewPass] = useState(false);
 
-  // Quick Recharge package selection
-  const rechargePackages = [
-    { id: 1, price: 1.0, credits: 100, label: '尝鲜体验', popular: false },
-    { id: 2, price: 50.0, credits: 5100, label: '推荐套餐', popular: true, gift: '送 100 积分' },
-    { id: 3, price: 100.0, credits: 10500, label: '超值优惠', popular: false, gift: '送 500 积分' },
-    { id: 4, price: 200.0, credits: 24000, label: '学者特惠', popular: false, gift: '送 4,000 积分' },
-    { id: 5, price: 500.0, credits: 65000, label: '机构优选', popular: false, gift: '送 15,000 积分' },
-  ];
-  const [selectedQuickPkg, setSelectedQuickPkg] = useState(rechargePackages[1]);
-
   // Toast feedback state
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -91,8 +78,6 @@ export default function ProfileView({
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
   };
-
-  const recentPayments = orders.slice(0, 4);
 
   // Available institutions from backend
   const availableInstitutions = institutions && institutions.length > 0 ? institutions : initialInstitutions;
@@ -180,67 +165,9 @@ export default function ProfileView({
         </div>
       )}
 
-      {/* 1. Page Header with Sub-tab Filter Capsules */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2 border-b border-slate-200/80">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">账户信息</h1>
-            <span className="px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200/60 flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-indigo-600" />
-              实名安全认证
-            </span>
-          </div>
-          <p className="text-sm text-slate-500 mt-1">
-            统一查看您的账号凭证、所属机构规范规则、安全设置与积分流水
-          </p>
-        </div>
-
-        {/* Action Buttons & Tabs */}
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Sub-tab capsules */}
-          <div className="bg-slate-100 p-1 rounded-2xl flex items-center text-xs sm:text-sm font-bold">
-            <button
-              onClick={() => setActiveTab('all')}
-              className={`px-3.5 py-1.5 rounded-xl transition-all cursor-pointer ${
-                activeTab === 'all'
-                  ? 'bg-white text-slate-900 shadow-2xs'
-                  : 'text-slate-500 hover:text-slate-800'
-              }`}
-            >
-              账户总览
-            </button>
-            <button
-              onClick={() => setActiveTab('account')}
-              className={`px-3.5 py-1.5 rounded-xl transition-all cursor-pointer ${
-                activeTab === 'account'
-                  ? 'bg-white text-slate-900 shadow-2xs'
-                  : 'text-slate-500 hover:text-slate-800'
-              }`}
-            >
-              资料与密码
-            </button>
-            <button
-              onClick={() => setActiveTab('assets')}
-              className={`px-3.5 py-1.5 rounded-xl transition-all cursor-pointer ${
-                activeTab === 'assets'
-                  ? 'bg-white text-slate-900 shadow-2xs'
-                  : 'text-slate-500 hover:text-slate-800'
-              }`}
-            >
-              资产与充值
-            </button>
-          </div>
-
-          {/* Primary Top Recharge Button */}
-          <button
-            id="profile-header-recharge-btn"
-            onClick={onOpenRecharge}
-            className="px-5 py-2 rounded-2xl text-white font-bold text-xs sm:text-sm bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 shadow-md shadow-orange-500/25 hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer active:scale-95"
-          >
-            <Zap className="w-4 h-4 fill-white" />
-            <span>充值积分</span>
-          </button>
-        </div>
+      {/* 1. Page Header */}
+      <div className="pb-3 border-b border-slate-200/80">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">账户信息</h1>
       </div>
 
       {/* 2. Main 2-Column Grid */}
@@ -315,292 +242,139 @@ export default function ProfileView({
         </div>
 
         {/* ======================================================== */}
-        {/* RIGHT COLUMN: Restructured Information Modules           */}
+        {/* RIGHT COLUMN: Account Profile Settings                    */}
         {/* ======================================================== */}
-        <div className="lg:col-span-8 space-y-8">
-          
-          {/* ======================================================= */}
-          {/* 模块 1: 账号基本资料 (Account Profile & Credentials)      */}
-          {/* ======================================================= */}
-          {(activeTab === 'all' || activeTab === 'account') && (
-            <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xs p-7 sm:p-8 space-y-6">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
-                    <Edit3 className="w-4.5 h-4.5" />
-                  </div>
-                  <div>
-                    <h3 className="text-base sm:text-lg font-bold text-slate-900">账号资料与密码设置</h3>
-                    <p className="text-xs text-slate-400">管理登录账号、修改登录密码、绑定手机、安全邮箱及所属学术机构</p>
-                  </div>
+        <div className="lg:col-span-8 space-y-6">
+          <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xs p-7 sm:p-8 space-y-6">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+                  <Edit3 className="w-4.5 h-4.5" />
                 </div>
-              </div>
-
-              <div className="divide-y divide-slate-100 text-xs sm:text-sm">
-                {/* 1. 登录账号 / 用户名 (不可修改) */}
-                <div className="py-4.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-slate-800 text-sm">登录账号 / 用户名</span>
-                      <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
-                        不可修改
-                      </span>
-                    </div>
-                    <p className="text-slate-900 mt-1 font-mono font-semibold text-sm">{user.username}</p>
-                    <span className="text-xs text-slate-400">
-                      系统唯一账号主标识，用于身份凭证与各检测报告归属鉴权，系统禁止修改
-                    </span>
-                  </div>
-                  <div className="self-start sm:self-auto flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100/80 text-slate-500 text-xs font-bold border border-slate-200/80 select-none">
-                    <Lock className="w-3.5 h-3.5 text-slate-400" />
-                    <span>主账号固定</span>
-                  </div>
-                </div>
-
-                {/* 2. 登录密码 (修改密码) */}
-                <div className="py-4.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-slate-800 text-sm">登录密码</span>
-                      <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
-                        安全已保护
-                      </span>
-                    </div>
-                    <p className="text-slate-400 mt-1 font-mono tracking-widest text-sm">••••••••••••</p>
-                    <span className="text-xs text-slate-400">
-                      建议定期更新密码保障账号与论文报告安全，长度不低于6位
-                    </span>
-                  </div>
-                  <button
-                    id="btn-edit-password"
-                    onClick={() => {
-                      setOldPassword('');
-                      setNewPassword('');
-                      setConfirmPassword('');
-                      setIsEditingPassword(true);
-                    }}
-                    className="self-start sm:self-auto px-4 py-2 rounded-xl text-purple-700 hover:text-purple-800 bg-purple-50 hover:bg-purple-100 font-bold transition-all cursor-pointer text-xs flex items-center gap-1.5 shadow-2xs active:scale-95"
-                  >
-                    <KeyRound className="w-3.5 h-3.5" />
-                    <span>修改密码</span>
-                  </button>
-                </div>
-
-                {/* 3. 绑定手机 (不可修改) */}
-                <div className="py-4.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-slate-800 text-sm">绑定手机号码</span>
-                      <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
-                        不可修改
-                      </span>
-                    </div>
-                    <p className="text-slate-900 mt-1 font-mono font-semibold text-sm">{user.phone || '13800138000'}</p>
-                    <span className="text-xs text-slate-400">
-                      已完成实名制手机认证，用于短信动态码登录与安全消费提醒，系统禁止篡改
-                    </span>
-                  </div>
-                  <div className="self-start sm:self-auto flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100/80 text-slate-500 text-xs font-bold border border-slate-200/80 select-none">
-                    <Lock className="w-3.5 h-3.5 text-slate-400" />
-                    <span>实名手机锁定</span>
-                  </div>
-                </div>
-
-                {/* 4. 安全邮箱 */}
-                <div className="py-4.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div>
-                    <span className="font-bold text-slate-800 text-sm">安全邮箱地址</span>
-                    <p className="text-slate-900 mt-1 font-mono text-sm">{user.email}</p>
-                    <span className="text-xs text-slate-400">用于接收检测完成报告邮件推送与对账月报</span>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setNewEmail(user.email);
-                      setIsEditingEmail(true);
-                    }}
-                    className="self-start sm:self-auto px-4 py-2 rounded-xl text-indigo-600 hover:text-indigo-700 bg-indigo-50/80 hover:bg-indigo-100 font-bold transition-all cursor-pointer text-xs"
-                  >
-                    换绑邮箱
-                  </button>
-                </div>
-
-                {/* 5. 所在机构 (选择自管理后台机构库) */}
-                <div className="py-4.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-slate-800 text-sm">所在机构 / 大学 / 院所</span>
-                      {user.institution ? (
-                        <span className="text-[11px] font-bold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200/60">
-                          已关联后台机构
-                        </span>
-                      ) : (
-                        <span className="text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200/60">
-                          未选择机构
-                        </span>
-                      )}
-                    </div>
-                    
-                    <div className="flex items-center gap-2 mt-1.5">
-                      <Building2 className="w-4.5 h-4.5 text-indigo-600 shrink-0" />
-                      <span className="text-slate-900 font-bold text-sm">
-                        {user.institution || <span className="text-slate-400 font-normal">暂未选择所属机构（请点击右侧选择）</span>}
-                      </span>
-                    </div>
-
-                    <p className="text-xs text-slate-400 mt-1">
-                      数据来源与管理后台「机构管理」实时同步；关联后自动匹配该机构专属学位论文审查规范与排版规则
-                    </p>
-                  </div>
-
-                  <button
-                    id="btn-select-institution"
-                    onClick={() => {
-                      setSelectedInstTemp(user.institution || '');
-                      setInstSearchQuery('');
-                      setInstTypeFilter('全部');
-                      setIsSelectingInstitution(true);
-                    }}
-                    className="self-start sm:self-auto px-4.5 py-2.5 rounded-xl text-white font-bold bg-indigo-600 hover:bg-indigo-700 shadow-sm shadow-indigo-600/20 hover:shadow-md transition-all cursor-pointer text-xs flex items-center gap-2 active:scale-95"
-                  >
-                    <Building2 className="w-3.5 h-3.5" />
-                    <span>{user.institution ? '切换所在机构' : '选择所在机构'}</span>
-                  </button>
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold text-slate-900">账号资料与密码设置</h3>
                 </div>
               </div>
             </div>
-          )}
 
-          {/* ======================================================= */}
-          {/* 模块 2: 积分资产与快捷充值中心 (Credits & Top-Up)         */}
-          {/* ======================================================= */}
-          {(activeTab === 'all' || activeTab === 'assets') && (
-            <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xs p-7 sm:p-8 space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
-                    <Zap className="w-4.5 h-4.5 fill-amber-500" />
-                  </div>
-                  <div>
-                    <h3 className="text-base sm:text-lg font-bold text-slate-900">积分资产与快捷充值</h3>
-                    <p className="text-xs text-slate-400">1 元 = 100 积分，充值后即时到账，永久有效</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-slate-500">可用余额：</span>
-                  <span className="font-mono font-black text-amber-600 text-lg">
-                    {user.balance.toLocaleString()}
-                  </span>
-                  <span className="text-xs text-slate-400">积分</span>
-                </div>
-              </div>
-
-              {/* Package cards grid right in the page */}
-              <div className="space-y-3">
-                <label className="text-xs font-bold text-slate-600 block">
-                  快捷充值套餐（点击即刻结算）
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                  {rechargePackages.map((pkg) => {
-                    const isSelected = selectedQuickPkg.id === pkg.id;
-                    return (
-                      <div
-                        key={pkg.id}
-                        onClick={() => setSelectedQuickPkg(pkg)}
-                        className={`relative p-4 rounded-2xl border text-center transition-all cursor-pointer ${
-                          isSelected
-                            ? 'border-indigo-600 bg-indigo-50/50 shadow-sm ring-2 ring-indigo-600/20 scale-[1.02]'
-                            : 'border-slate-200 hover:border-slate-300 hover:shadow-2xs bg-white'
-                        }`}
-                      >
-                        {pkg.popular && (
-                          <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-2xs">
-                            热选
-                          </span>
-                        )}
-                        <div className="text-base font-black text-slate-900">
-                          ¥{pkg.price.toFixed(0)}
-                        </div>
-                        <div className="text-xs font-bold text-indigo-600 mt-0.5">
-                          {pkg.credits.toLocaleString()} 积分
-                        </div>
-                        <div className="text-[11px] text-slate-400 mt-1">
-                          {pkg.label}
-                        </div>
-                        {pkg.gift && (
-                          <span className="inline-block mt-1 text-[10px] text-amber-600 bg-amber-50 font-bold px-1.5 py-0.5 rounded-md">
-                            {pkg.gift}
-                          </span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div className="text-xs text-slate-500">
-                    已选：<span className="font-bold text-slate-900">{selectedQuickPkg.label}（¥{selectedQuickPkg.price} / {selectedQuickPkg.credits}积分）</span>
-                  </div>
-                  <button
-                    onClick={onOpenRecharge}
-                    className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs shadow-md shadow-orange-500/20 hover:shadow-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                  >
-                    <Zap className="w-3.5 h-3.5 fill-white" />
-                    <span>前往充值结算</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Recent Orders List inside Assets Tab */}
-              {recentPayments.length > 0 && (
-                <div className="pt-4 border-t border-slate-100 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                      <Receipt className="w-3.5 h-3.5 text-slate-400" />
-                      最近充值流水记录
+            <div className="divide-y divide-slate-100 text-xs sm:text-sm">
+              {/* 1. 登录账号 / 用户名 (不可修改) */}
+              <div className="py-4.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-slate-800 text-sm">登录账号 / 用户名</span>
+                    <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
+                      不可修改
                     </span>
-                    <button
-                      onClick={() => onNavigate('orders')}
-                      className="text-xs text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-1 cursor-pointer"
-                    >
-                      <span>查看全部订单</span>
-                      <ChevronRight className="w-3 h-3" />
-                    </button>
                   </div>
+                  <p className="text-slate-900 mt-1 font-mono font-semibold text-sm">{user.username}</p>
+                </div>
+                <div className="self-start sm:self-auto flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100/80 text-slate-500 text-xs font-bold border border-slate-200/80 select-none">
+                  <Lock className="w-3.5 h-3.5 text-slate-400" />
+                  <span>主账号固定</span>
+                </div>
+              </div>
 
-                  <div className="space-y-2">
-                    {recentPayments.map((ord) => (
-                      <div
-                        key={ord.orderNo}
-                        className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between text-xs"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold">
-                            <CheckCircle2 className="w-4 h-4" />
-                          </div>
-                          <div>
-                            <div className="font-bold text-slate-800">积分充值 · {ord.credits}</div>
-                            <div className="text-[11px] text-slate-400 font-mono mt-0.5">
-                              {ord.orderNo} · {ord.createTime}
-                            </div>
-                          </div>
-                        </div>
+              {/* 2. 登录密码 (修改密码) */}
+              <div className="py-4.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-slate-800 text-sm">登录密码</span>
+                    <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                      安全已保护
+                    </span>
+                  </div>
+                  <p className="text-slate-400 mt-1 font-mono tracking-widest text-sm">••••••••••••</p>
+                </div>
+                <button
+                  id="btn-edit-password"
+                  onClick={() => {
+                    setOldPassword('');
+                    setNewPassword('');
+                    setConfirmPassword('');
+                    setIsEditingPassword(true);
+                  }}
+                  className="self-start sm:self-auto px-4 py-2 rounded-xl text-purple-700 hover:text-purple-800 bg-purple-50 hover:bg-purple-100 font-bold transition-all cursor-pointer text-xs flex items-center gap-1.5 shadow-2xs active:scale-95"
+                >
+                  <KeyRound className="w-3.5 h-3.5" />
+                  <span>修改密码</span>
+                </button>
+              </div>
 
-                        <div className="text-right">
-                          <div className="font-black text-slate-900 font-mono">
-                            +{ord.credits} 积分
-                          </div>
-                          <div className="text-[11px] text-slate-500 font-mono">
-                            {ord.amount} ({ord.channel})
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+              {/* 3. 绑定手机 (不可修改) */}
+              <div className="py-4.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-slate-800 text-sm">绑定手机号码</span>
+                    <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
+                      不可修改
+                    </span>
+                  </div>
+                  <p className="text-slate-900 mt-1 font-mono font-semibold text-sm">{user.phone || '13800138000'}</p>
+                </div>
+                <div className="self-start sm:self-auto flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100/80 text-slate-500 text-xs font-bold border border-slate-200/80 select-none">
+                  <Lock className="w-3.5 h-3.5 text-slate-400" />
+                  <span>实名手机锁定</span>
+                </div>
+              </div>
+
+              {/* 4. 安全邮箱 */}
+              <div className="py-4.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <span className="font-bold text-slate-800 text-sm">安全邮箱地址</span>
+                  <p className="text-slate-900 mt-1 font-mono text-sm">{user.email}</p>
+                </div>
+                <button
+                  onClick={() => {
+                    setNewEmail(user.email);
+                    setIsEditingEmail(true);
+                  }}
+                  className="self-start sm:self-auto px-4 py-2 rounded-xl text-indigo-600 hover:text-indigo-700 bg-indigo-50/80 hover:bg-indigo-100 font-bold transition-all cursor-pointer text-xs"
+                >
+                  换绑邮箱
+                </button>
+              </div>
+
+              {/* 5. 所在机构 (选择自管理后台机构库) */}
+              <div className="py-4.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-slate-800 text-sm">所在机构 / 大学 / 院所</span>
+                    {user.institution ? (
+                      <span className="text-[11px] font-bold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200/60">
+                        已关联后台机构
+                      </span>
+                    ) : (
+                      <span className="text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200/60">
+                        未选择机构
+                      </span>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center gap-2 mt-1.5">
+                    <Building2 className="w-4.5 h-4.5 text-indigo-600 shrink-0" />
+                    <span className="text-slate-900 font-bold text-sm">
+                      {user.institution || <span className="text-slate-400 font-normal">暂未选择所属机构（请点击右侧选择）</span>}
+                    </span>
                   </div>
                 </div>
-              )}
+
+                <button
+                  id="btn-select-institution"
+                  onClick={() => {
+                    setSelectedInstTemp(user.institution || '');
+                    setInstSearchQuery('');
+                    setInstTypeFilter('全部');
+                    setIsSelectingInstitution(true);
+                  }}
+                  className="self-start sm:self-auto px-4.5 py-2.5 rounded-xl text-white font-bold bg-indigo-600 hover:bg-indigo-700 shadow-sm shadow-indigo-600/20 hover:shadow-md transition-all cursor-pointer text-xs flex items-center gap-2 active:scale-95"
+                >
+                  <Building2 className="w-3.5 h-3.5" />
+                  <span>{user.institution ? '切换所在机构' : '选择所在机构'}</span>
+                </button>
+              </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
 

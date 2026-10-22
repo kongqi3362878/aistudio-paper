@@ -14,7 +14,8 @@ import {
   School,
   ChevronLeft, 
   ChevronRight, 
-  Globe
+  Globe,
+  GraduationCap
 } from 'lucide-react';
 import { PageKey } from '../../types';
 import BrandLogo from './BrandLogo';
@@ -150,6 +151,19 @@ export default function Sidebar({
 
       {/* Bottom Actions */}
       <div className="p-4 border-t border-slate-100 space-y-1.5">
+        {/* Institution Member Identity Card */}
+        {!collapsed && (userRole === '机构学生' || userRole === '机构教师') && (
+          <div className="p-3 rounded-2xl bg-gradient-to-br from-indigo-50/90 to-blue-50/80 border border-indigo-100/80 mb-2">
+            <div className="flex items-center gap-2 text-indigo-900 font-bold text-xs mb-1">
+              <GraduationCap className="w-4 h-4 text-indigo-600 shrink-0" />
+              <span>{userRole === '机构教师' ? '高校教师专享通道' : '机构学生专享通道'}</span>
+            </div>
+            <p className="text-[11px] text-slate-500 leading-tight">
+              已接入校方试用与院系专款，检测自动免自费扣减
+            </p>
+          </div>
+        )}
+
         {/* Return to website link */}
         <button
           id="btn-return-to-landing"

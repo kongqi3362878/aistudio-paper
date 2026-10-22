@@ -1618,9 +1618,6 @@ export default function InstitutionPortalView({
                     <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                       全校额度与试用资产概览
                     </h2>
-                    <p className="text-xs sm:text-sm text-slate-500">
-                      统一管理机构正式商业额度与试用篇数资产池。额度与试用是对每个成员直接分配，而不是对学院分配。
-                    </p>
                   </div>
 
                   <div className="flex items-center gap-2.5 self-start sm:self-auto">
@@ -1675,13 +1672,9 @@ export default function InstitutionPortalView({
                         {(formalTotalCredits - formalUsedCredits).toLocaleString()}{' '}
                         <span className="text-xs font-normal text-slate-400">次</span>
                       </div>
-                      <div className="text-[11px] text-slate-500">
-                        池中未分配余额，随时可向全校师生分配
-                      </div>
                     </div>
                     <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-400 flex justify-between items-center">
                       <span>可覆盖全校师生</span>
-                      <span className="text-sky-600 font-bold bg-sky-50 px-2 py-0.5 rounded-full border border-sky-100">随时可发</span>
                     </div>
                   </div>
 
@@ -1696,12 +1689,8 @@ export default function InstitutionPortalView({
                         {trialTotalLimit}{' '}
                         <span className="text-xs font-normal text-slate-400">篇次</span>
                       </div>
-                      <div className="text-[11px] text-slate-500">
-                        平台提供的高校学术规范专项体验名额
-                      </div>
                     </div>
-                    <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-400 flex justify-between items-center">
-                      <span>已分配/消耗: {trialTotalLimit - trialAvailablePapers} 篇</span>
+                    <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-400 flex justify-end items-center">
                       <span className="text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">官方赠送</span>
                     </div>
                   </div>
@@ -1717,87 +1706,9 @@ export default function InstitutionPortalView({
                         {trialAvailablePapers}{' '}
                         <span className="text-xs font-normal text-slate-400">篇</span>
                       </div>
-                      <div className="text-[11px] text-slate-500">
-                        可随时为学生或老师分配免费试用篇数
-                      </div>
                     </div>
-                    <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-400 flex justify-between items-center">
-                      <span>试用按成员精准发放</span>
+                    <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-400 flex justify-end items-center">
                       <span className="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">实时到账</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Quick Action Banner */}
-                <div className="bg-gradient-to-r from-sky-50 via-blue-50 to-indigo-50/60 p-5 rounded-3xl border border-sky-100 flex flex-col md:flex-row items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-sky-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-sky-500/20">
-                      <Send className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <div className="text-sm font-black text-slate-900">快捷分配：对每个成员分配额度和试用次数</div>
-                      <div className="text-xs text-slate-500 mt-0.5">
-                        额度管理支持直接向每位学生与老师分配正式检测次数与试用篇数，支持单人分配与批量勾选分配，无需对学院划拨。
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <button
-                      onClick={() => setQuotaSubTab('allocate')}
-                      className="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-xl text-xs font-bold shadow-md shadow-sky-500/20 cursor-pointer transition-all flex items-center gap-1.5"
-                    >
-                      <Users className="w-3.5 h-3.5" />
-                      <span>进入成员分配列表</span>
-                    </button>
-                    <button
-                      onClick={() => setQuotaSubTab('records')}
-                      className="px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold cursor-pointer transition-all"
-                    >
-                      查看台账记录
-                    </button>
-                  </div>
-                </div>
-
-                {/* Member Allocation Coverage Analytics */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-2">
-                    <div className="text-xs font-bold text-slate-500 flex items-center justify-between">
-                      <span>全校成员覆盖规模</span>
-                      <Users className="w-4 h-4 text-sky-600" />
-                    </div>
-                    <div className="text-2xl font-black text-slate-900">{members.length} <span className="text-xs font-normal text-slate-400">人</span></div>
-                    <div className="text-xs text-slate-500 flex gap-3 pt-2 border-t border-slate-100">
-                      <span>学生：<strong className="text-sky-600">{members.filter(m => m.identity === '学生').length}</strong> 人</span>
-                      <span>教师：<strong className="text-amber-600">{members.filter(m => m.identity === '老师').length}</strong> 人</span>
-                    </div>
-                  </div>
-
-                  <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-2">
-                    <div className="text-xs font-bold text-slate-500 flex items-center justify-between">
-                      <span>成员持有正式检测额度总计</span>
-                      <Coins className="w-4 h-4 text-sky-600" />
-                    </div>
-                    <div className="text-2xl font-black text-sky-600">
-                      {members.reduce((acc, m) => {
-                        const c = m.availableCredits ?? m.credits ?? 0;
-                        return acc + (c >= 100 ? Math.floor(c / 100) : c);
-                      }, 0).toLocaleString()} <span className="text-xs font-normal text-slate-400">次可用</span>
-                    </div>
-                    <div className="text-xs text-slate-500 pt-2 border-t border-slate-100">
-                      全校师生个人账户中当前可用于论文检测的正式检测额度
-                    </div>
-                  </div>
-
-                  <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-2">
-                    <div className="text-xs font-bold text-slate-500 flex items-center justify-between">
-                      <span>成员持有试用篇数总计</span>
-                      <Sparkles className="w-4 h-4 text-blue-600" />
-                    </div>
-                    <div className="text-2xl font-black text-blue-600">
-                      {members.reduce((acc, m) => acc + (m.availablePapers || 0), 0)} <span className="text-xs font-normal text-slate-400">篇可用</span>
-                    </div>
-                    <div className="text-xs text-slate-500 pt-2 border-t border-slate-100">
-                      累计已消耗检测 {members.reduce((acc, m) => acc + (m.usedPapers || 0), 0)} 篇试用
                     </div>
                   </div>
                 </div>

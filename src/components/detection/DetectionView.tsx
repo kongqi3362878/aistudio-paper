@@ -11,7 +11,9 @@ import {
   AlertCircle,
   Clock,
   Trash2,
-  FolderPlus
+  FolderPlus,
+  GraduationCap,
+  Building2
 } from 'lucide-react';
 import { DetectionTab, PaperDetectionRecord, BatchTask, UserProfile } from '../../types';
 
@@ -197,18 +199,34 @@ export default function DetectionView({
               <p className="text-base text-slate-500">
                 支持 DOCX 与 PDF，检查文字、图表和参考文献。
               </p>
-              <div className="pt-2 flex flex-wrap items-center justify-center gap-3.5 text-sm">
-                <span className="text-slate-600">
-                  已用 <span className="font-bold text-slate-900">{user.usedBalance.toLocaleString()}</span> · 余额{' '}
-                  <span className="font-black text-blue-600">{user.balance.toLocaleString()}</span> 积分
-                </span>
-                <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200/80 font-bold text-xs">
-                  8折 · 短稿 800 起
-                </span>
-                <span className="text-slate-400">
-                  <span className="line-through">2,000</span> <span className="font-bold text-slate-700">1,600</span> 积分 / 万字
-                </span>
-              </div>
+              {user.isInstitutionMember ? (
+                <div className="pt-2 flex flex-wrap items-center justify-center gap-3 text-xs sm:text-sm">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 font-bold border border-indigo-200/80 shadow-2xs">
+                    <GraduationCap className="w-4 h-4 text-indigo-600" />
+                    校方试用专享：剩余 {user.institutionTrialPapers ?? 2} 篇免费可用
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-bold border border-blue-200/80 shadow-2xs">
+                    <Building2 className="w-4 h-4 text-blue-600" />
+                    {user.college || '计算机学院'}专款：{(user.allocatedQuota ?? 1200).toLocaleString()} 积分
+                  </span>
+                  <span className="text-slate-500 font-medium bg-slate-100 px-3 py-1 rounded-full text-xs">
+                    优先免自费扣减校方试用 (自付 ¥0.00)
+                  </span>
+                </div>
+              ) : (
+                <div className="pt-2 flex flex-wrap items-center justify-center gap-3.5 text-sm">
+                  <span className="text-slate-600">
+                    已用 <span className="font-bold text-slate-900">{user.usedBalance.toLocaleString()}</span> · 余额{' '}
+                    <span className="font-black text-blue-600">{user.balance.toLocaleString()}</span> 积分
+                  </span>
+                  <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200/80 font-bold text-xs">
+                    8折 · 短稿 800 起
+                  </span>
+                  <span className="text-slate-400">
+                    <span className="line-through">2,000</span> <span className="font-bold text-slate-700">1,600</span> 积分 / 万字
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Dashed Dropzone */}

@@ -86,11 +86,6 @@ export default function InstitutionOverviewView({
                  activeSubTab === 'quotaOverview' ? '额度概览' : '试用概览'}
               </span>
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500">
-              {adminLevel === '总管理员'
-                ? '全校论文送审态势、学术规范合格率、各二级学院额度下拨与校方试用消耗全景监控。'
-                : `【${managedCollege}】师生送检论文态势、本院额度结余与校方试用篇数实时统计。`}
-            </p>
           </div>
 
           <div className="flex items-center gap-2 bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200/80 self-start md:self-auto text-xs font-bold">
@@ -163,154 +158,21 @@ export default function InstitutionOverviewView({
       {/* 2. SUB-TAB 1: 机构看板 / 学院看板 */}
       {activeSubTab === 'dashboard' && (
         <div className="space-y-6 animate-in fade-in duration-150">
-          {/* 4 Core Summary Metric Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-            <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs relative overflow-hidden group hover:border-indigo-300 transition-all">
+          {/* Primary Summary Metric Card */}
+          <div className="grid grid-cols-1 gap-4 sm:gap-5">
+            <div className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200/80 shadow-xs relative overflow-hidden group hover:border-indigo-300 transition-all">
               <div className="flex items-center justify-between text-slate-400">
-                <span className="text-xs font-bold">{adminLevel === '总管理员' ? '全校送检论文' : '本院送检论文'}</span>
-                <div className="w-9 h-9 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                  <FileCheck className="w-4.5 h-4.5" />
+                <span className="text-sm font-bold text-slate-700">{adminLevel === '总管理员' ? '全校送检论文' : '本院送检论文'}</span>
+                <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                  <FileCheck className="w-5 h-5" />
                 </div>
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-slate-900 mt-2">
-                {adminLevel === '总管理员' ? '2,842' : '820'} <span className="text-xs text-slate-400 font-normal">篇</span>
+              <div className="text-3xl sm:text-4xl font-black text-slate-900 mt-3">
+                {adminLevel === '总管理员' ? '2,842' : '820'} <span className="text-sm text-slate-400 font-normal">篇</span>
               </div>
-              <div className="text-[11px] text-emerald-600 flex items-center gap-1 mt-2 font-bold">
-                <TrendingUp className="w-3.5 h-3.5" />
+              <div className="text-xs text-emerald-600 flex items-center gap-1.5 mt-3 font-bold">
+                <TrendingUp className="w-4 h-4" />
                 <span>较上月提升 28.4%</span>
-              </div>
-            </div>
-
-            <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs relative overflow-hidden group hover:border-indigo-300 transition-all">
-              <div className="flex items-center justify-between text-slate-400">
-                <span className="text-xs font-bold">学术规范合格率</span>
-                <div className="w-9 h-9 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                  <Award className="w-4.5 h-4.5" />
-                </div>
-              </div>
-              <div className="text-2xl sm:text-3xl font-black text-slate-900 mt-2">
-                {adminLevel === '总管理员' ? '95.2%' : '96.8%'}
-              </div>
-              <div className="text-[11px] text-emerald-600 flex items-center gap-1 mt-2 font-bold">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>平均瑕疵 ≤ 3.2 处</span>
-              </div>
-            </div>
-
-            <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs relative overflow-hidden group hover:border-indigo-300 transition-all">
-              <div className="flex items-center justify-between text-slate-400">
-                <span className="text-xs font-bold">{adminLevel === '总管理员' ? '下属二级学院' : '在籍师生成员'}</span>
-                <div className="w-9 h-9 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center">
-                  {adminLevel === '总管理员' ? <School className="w-4.5 h-4.5" /> : <Users className="w-4.5 h-4.5" />}
-                </div>
-              </div>
-              <div className="text-2xl sm:text-3xl font-black text-slate-900 mt-2">
-                {adminLevel === '总管理员' ? `${colleges.length} 所` : `${scopedMembers.length} 人`}
-              </div>
-              <div className="text-[11px] text-purple-700 mt-2 font-bold">
-                {adminLevel === '总管理员' ? '已全覆盖管理员配置' : `包含 ${scopedMembers.filter(m => m.identity === '老师').length} 位专任教师`}
-              </div>
-            </div>
-
-            <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs relative overflow-hidden group hover:border-indigo-300 transition-all">
-              <div className="flex items-center justify-between text-slate-400">
-                <span className="text-xs font-bold">{adminLevel === '总管理员' ? '可用校方试用' : '本院可用试用'}</span>
-                <div className="w-9 h-9 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
-                  <Sparkles className="w-4.5 h-4.5" />
-                </div>
-              </div>
-              <div className="text-2xl sm:text-3xl font-black text-slate-900 mt-2">
-                {adminLevel === '总管理员' ? trialAvailablePapers : collegeTrialAvailable} <span className="text-xs text-slate-400 font-normal">篇</span>
-              </div>
-              <div className="text-[11px] text-amber-600 mt-2 font-bold">
-                {adminLevel === '总管理员' ? `已累计批复 ${trialTotalLimit} 篇` : `学院池剩余 ${collegeTrialAvailable} 篇`}
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Perspective Breakdown */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-7 bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
-                    <BarChart3 className="w-4.5 h-4.5 text-indigo-600" />
-                    <span>{adminLevel === '总管理员' ? '各学院论文检测活跃度与达标走势' : '本院各专业/年级送检论文分布'}</span>
-                  </h3>
-                  <p className="text-xs text-slate-400 mt-0.5">统计开题、中期检查与答辩论文提交数据</p>
-                </div>
-                <span className="text-xs bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-xl font-bold font-mono">
-                  {trendRange}
-                </span>
-              </div>
-
-              <div className="space-y-3 pt-2">
-                {(adminLevel === '总管理员' ? colleges : [
-                  { id: 'cs-ai', name: '人工智能与机器学习方向 (硕博)', allocatedQuota: 28000, usedQuota: 9500, studentsCount: 45, teachersCount: 6 },
-                  { id: 'cs-se', name: '软件工程与分布式系统 (本科/学硕)', allocatedQuota: 22000, usedQuota: 6200, studentsCount: 68, teachersCount: 8 },
-                  { id: 'cs-cs', name: '计算机科学与前沿理论 (本科)', allocatedQuota: 10000, usedQuota: 2500, studentsCount: 29, teachersCount: 4 },
-                ]).map((item, idx) => {
-                  const percent = Math.min(100, Math.round(((item as any).usedQuota / (item as any).allocatedQuota) * 100)) || (idx === 0 ? 76 : idx === 1 ? 58 : 34);
-                  return (
-                    <div key={item.id} className="p-3 bg-slate-50/80 rounded-2xl border border-slate-100 space-y-1.5">
-                      <div className="flex justify-between text-xs font-bold text-slate-800">
-                        <span className="flex items-center gap-2">
-                          <span className="w-5 h-5 rounded-lg bg-indigo-100 text-indigo-700 text-[10px] flex items-center justify-center font-bold">
-                            {idx + 1}
-                          </span>
-                          <span>{item.name}</span>
-                          {(item as any).adminName && (
-                            <span className="text-[10px] font-medium text-slate-400">
-                              (管理员: {(item as any).adminName})
-                            </span>
-                          )}
-                        </span>
-                        <span className="font-mono text-slate-600">
-                          {(item as any).usedQuota?.toLocaleString()} / {(item as any).allocatedQuota?.toLocaleString()} 点 ({percent}%)
-                        </span>
-                      </div>
-                      <div className="h-2 w-full bg-slate-200/80 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-full transition-all duration-500"
-                          style={{ width: `${percent}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Academic Quality & Risk Monitor */}
-            <div className="lg:col-span-5 bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
-                    <ShieldCheck className="w-4.5 h-4.5 text-emerald-600" />
-                    <span>学术规范与格式质检监测</span>
-                  </h3>
-                  <p className="text-xs text-slate-400 mt-0.5">高频排版格式瑕疵分类拦截</p>
-                </div>
-              </div>
-
-              <div className="space-y-3 pt-2">
-                {[
-                  { title: '参考文献国标格式规范与年份缺失', count: 1420, rate: '49.8%', level: '高发' },
-                  { title: '三线表跨页断表与图表题注编号不符', count: 980, rate: '34.5%', level: '常见' },
-                  { title: '中英文摘要关键词半角全角符号混用', count: 620, rate: '21.8%', level: '格式' },
-                  { title: '奇偶页页眉排版与封面盲审格式差异', count: 480, rate: '16.9%', level: '排版' },
-                  { title: '目录三级标题页码与正文标题不一致', count: 350, rate: '12.3%', level: '轻度' },
-                ].map((issue, idx) => (
-                  <div key={idx} className="p-3 bg-slate-50/80 rounded-2xl border border-slate-100 flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <div className="text-xs font-bold text-slate-800">{issue.title}</div>
-                      <div className="text-[11px] text-slate-400">检出 {issue.count} 次 · 占比 {issue.rate}</div>
-                    </div>
-                    <span className="text-[11px] px-2 py-0.5 rounded-lg bg-white border border-slate-200 font-bold text-slate-600">
-                      {issue.level}
-                    </span>
-                  </div>
-                ))}
               </div>
             </div>
           </div>

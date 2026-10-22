@@ -63,8 +63,24 @@ export default function Header({ user, onNavigate, onSearch }: HeaderProps) {
               {user.avatarLetter || 'a'}
             </div>
             <div className="text-left hidden sm:block">
-              <span className="text-base font-bold text-slate-800 block leading-tight">{user.username}</span>
-              <span className="text-xs text-slate-400">{user.role}</span>
+              {user.isInstitutionMember ? (
+                <>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-sm sm:text-base font-bold text-slate-800 block leading-tight">{user.username}</span>
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200/60">
+                      {user.institution || '武汉大学'}
+                    </span>
+                  </div>
+                  <span className="text-xs text-slate-400">
+                    {user.college || '计算机学院'} · {user.identity === '老师' ? '教师' : '学生'}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="text-base font-bold text-slate-800 block leading-tight">{user.username}</span>
+                  <span className="text-xs text-slate-400">{user.role}</span>
+                </>
+              )}
             </div>
           </button>
 
@@ -72,12 +88,33 @@ export default function Header({ user, onNavigate, onSearch }: HeaderProps) {
           {dropdownOpen && (
             <div 
               id="user-profile-dropdown"
-              className="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50 text-sm animate-in fade-in slide-in-from-top-2 duration-150"
+              className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50 text-sm animate-in fade-in slide-in-from-top-2 duration-150"
             >
               <div className="px-5 py-2.5 border-b border-slate-100">
                 <p className="font-bold text-slate-900 text-base">{user.username}</p>
                 <p className="text-xs text-slate-400 mt-0.5">{user.email}</p>
               </div>
+
+              {user.isInstitutionMember && (
+                <div className="px-5 py-2.5 bg-indigo-50/50 border-b border-indigo-100/80 text-xs space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500 font-medium">认证高校：</span>
+                    <span className="font-bold text-indigo-900">{user.institution}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500 font-medium">院系身份：</span>
+                    <span className="font-semibold text-slate-800">{user.college} · {user.identity === '老师' ? '教师' : '学生'}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500 font-medium">校方试用：</span>
+                    <span className="font-bold text-emerald-600">{user.institutionTrialPapers ?? 2} 篇 可用</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500 font-medium">学院额度：</span>
+                    <span className="font-bold text-blue-600">{(user.allocatedQuota ?? 1200).toLocaleString()} 积分</span>
+                  </div>
+                </div>
+              )}
 
               {user.role === '机构管理员' ? (
                 <div className="py-1">

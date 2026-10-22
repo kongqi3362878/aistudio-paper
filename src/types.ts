@@ -46,11 +46,17 @@ export interface UserProfile {
   username: string;
   name?: string;
   email: string;
-  role: string;
-  institution: string;
+  role: string; // '普通用户' | '机构学生' | '机构教师' | '机构管理员' | '学院管理员' | '平台管理员'
+  institution: string; // 如 '武汉大学'
+  college?: string; // 如 '计算机学院'
+  identity?: '学生' | '老师'; // 机构内具体身份
+  studentNo?: string; // 学号 / 工号 (如 20242021001 / T20190802)
+  advisorName?: string; // 指导教师姓名 (学生账号)
+  title?: string; // 教师职称 (如 副教授 / 硕士生导师)
+  degreeType?: string; // 学位层次 (如 硕士研究生 / 博士生 / 本科生)
   avatarLetter: string;
   joinDate: string;
-  balance: number; // 总剩余积分 = paidCredits + bonusCredits
+  balance: number; // 总剩余积分 = paidCredits + bonusCredits (个人积分)
   paidCredits?: number; // 付费本金积分（可退款/开票基数）
   bonusCredits?: number; // 系统赠送积分（不折现、不开发票）
   usedBalance: number; // 累计消耗总积分
@@ -58,6 +64,13 @@ export interface UserProfile {
   usedBonusCredits?: number; // 累计消耗赠送积分
   phone?: string;
   password?: string;
+  // 机构师生专属权益属性
+  isInstitutionMember?: boolean; // 是否为高校/科研机构认证下的学生或老师
+  institutionTrialPapers?: number; // 校方免费试用可用篇数 (如 2 篇)
+  usedInstitutionTrialPapers?: number; // 校方试用已用篇数 (如 1 篇)
+  allocatedQuota?: number; // 学院划拨专款额度积分 (如 1200 积分)
+  usedAllocatedQuota?: number; // 学院划拨已用积分 (如 400 积分)
+  authMethod?: 'carsi' | 'sso' | 'schoolPhone'; // 认证来源
 }
 
 export interface PaperDetectionRecord {

@@ -19,14 +19,15 @@ import {
   X,
   ExternalLink,
   Eye,
-  AlertTriangle
+  AlertTriangle,
+  User
 } from 'lucide-react';
 import BrandLogo from '../common/BrandLogo';
 import { PageKey, PaperDetectionRecord } from '../../types';
 import { initialRecords } from '../../data/mockData';
 
 interface LandingPageProps {
-  onEnterApp: (targetPage?: PageKey) => void;
+  onEnterApp: (targetPage?: PageKey, portal?: 'personal' | 'institution') => void;
   onViewSampleReport?: (record: PaperDetectionRecord) => void;
 }
 
@@ -131,19 +132,28 @@ export default function LandingPage({ onEnterApp, onViewSampleReport }: LandingP
             </button>
           </div>
 
-          {/* Right Auth Buttons */}
-          <div className="flex items-center gap-5">
+          {/* Right Auth Buttons with Dual Entrances */}
+          <div className="flex items-center gap-3">
             <button 
-              id="landing-btn-login"
-              onClick={() => onEnterApp('login')}
-              className="text-base font-semibold text-slate-700 hover:text-indigo-600 px-4 py-2.5 rounded-xl hover:bg-slate-100/70 transition-all cursor-pointer"
+              id="landing-btn-login-personal"
+              onClick={() => onEnterApp('login', 'personal')}
+              className="text-sm font-semibold text-slate-700 hover:text-indigo-600 px-3.5 py-2.5 rounded-xl hover:bg-slate-100/70 transition-all cursor-pointer flex items-center gap-1.5"
             >
-              登录
+              <User className="w-4 h-4 text-slate-400" />
+              <span>个人登录</span>
+            </button>
+            <button 
+              id="landing-btn-login-institution"
+              onClick={() => onEnterApp('login', 'institution')}
+              className="text-sm font-semibold text-indigo-700 hover:text-indigo-800 bg-indigo-50/80 hover:bg-indigo-100/90 border border-indigo-200/60 px-3.5 py-2.5 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
+            >
+              <GraduationCap className="w-4 h-4 text-indigo-600" />
+              <span>机构师生登录</span>
             </button>
             <button 
               id="landing-btn-start"
               onClick={() => onEnterApp('detection')}
-              className="relative group overflow-hidden bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#3B82F6] hover:from-[#4338CA] hover:to-[#2563EB] text-white text-base font-semibold px-6 py-2.5 rounded-xl shadow-md shadow-indigo-500/25 hover:shadow-lg hover:shadow-indigo-500/35 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+              className="relative group overflow-hidden bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#3B82F6] hover:from-[#4338CA] hover:to-[#2563EB] text-white text-sm sm:text-base font-semibold px-5 py-2.5 rounded-xl shadow-md shadow-indigo-500/25 hover:shadow-lg hover:shadow-indigo-500/35 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
             >
               <span className="relative z-10 flex items-center gap-1.5">
                 开始检测
@@ -181,21 +191,23 @@ export default function LandingPage({ onEnterApp, onViewSampleReport }: LandingP
             </p>
 
             {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-5 pt-2">
+            <div className="flex flex-wrap items-center gap-4 pt-2">
               <button 
                 id="hero-btn-login-start"
-                onClick={() => onEnterApp('detection')}
-                className="group relative overflow-hidden bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#3B82F6] hover:from-[#4338CA] hover:to-[#2563EB] text-white px-8 py-4 rounded-2xl font-bold text-base sm:text-lg flex items-center gap-2.5 shadow-xl shadow-indigo-500/25 hover:shadow-2xl hover:shadow-indigo-500/40 hover:-translate-y-1 active:translate-y-0 transition-all cursor-pointer"
+                onClick={() => onEnterApp('login', 'institution')}
+                className="group relative overflow-hidden bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#3B82F6] hover:from-[#4338CA] hover:to-[#2563EB] text-white px-7 py-4 rounded-2xl font-bold text-base sm:text-lg flex items-center gap-2.5 shadow-xl shadow-indigo-500/25 hover:shadow-2xl hover:shadow-indigo-500/40 hover:-translate-y-1 active:translate-y-0 transition-all cursor-pointer"
               >
-                <span>立即登录开始检测</span>
+                <GraduationCap className="w-5 h-5 shrink-0" />
+                <span>机构师生登录 (享校方试用)</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
               </button>
               <button 
-                id="hero-btn-learn-more"
-                onClick={() => scrollToSection('features-section')}
-                className="border-2 border-slate-200/90 hover:border-indigo-400 text-slate-700 hover:text-indigo-600 hover:bg-white/80 px-7 py-4 rounded-2xl font-semibold text-base sm:text-lg transition-all hover:-translate-y-0.5 shadow-xs cursor-pointer"
+                id="hero-btn-personal-login"
+                onClick={() => onEnterApp('login', 'personal')}
+                className="border-2 border-slate-200/90 hover:border-indigo-400 text-slate-700 hover:text-indigo-600 hover:bg-white/80 px-6 py-4 rounded-2xl font-semibold text-base sm:text-lg transition-all hover:-translate-y-0.5 shadow-xs cursor-pointer flex items-center gap-2"
               >
-                了解更多
+                <User className="w-5 h-5 text-slate-400" />
+                <span>个人自费入口</span>
               </button>
             </div>
 
